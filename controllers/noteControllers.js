@@ -20,7 +20,6 @@ const getAddController = async (req, res) => {
 const getNotesController = async (req, res) => {
   try {
     const notes = await Note.find();
-    console.log(notes.length);
     if (notes.length < 1)
       return res.status(404).send("not any note available in database...");
     res.send(notes);

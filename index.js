@@ -5,6 +5,7 @@ const mongoose = require("mongoose");
 //Router handel
 const noteRoute = require("./routes/notesRoutes");
 const indexRoute = require("./routes/indexRoutes");
+const userRoute = require("./routes/users");
 
 // //Middleware
 app.use(express.json());
@@ -26,7 +27,10 @@ app.use(express.json());
 
 // handeling routes;
 app.use("/", noteRoute);
+app.use("/users", userRoute);
+
 app.use("/", indexRoute);
+
 //server port runing
 app.listen(9000, () => {
   console.log("server is created...");
