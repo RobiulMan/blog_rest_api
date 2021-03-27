@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
 const validator = require("validator");
-
+const bcryptpass = require("bcryptjs");
+const jwt = require("jsonwebtoken");
 //user schema
 const userSchema = new mongoose.Schema({
   firstName: {
@@ -34,6 +35,18 @@ const userSchema = new mongoose.Schema({
       message: "password Must not congine your password",
     },
   },
+});
+userSchema.methods.generateAuthToken = function () {
+  const token = jwt.sign({ id: this._id }, "secretKey", { expiresIn: "4h" });
+  return token;
+};
+userSchema.pre("save", async function (next) {
+  const hashedpassword = await bcryptpass.hash(this.password, 10);
+  if (this.isModified("password")) {
+    this.password = hashedpassword;
+  }
+
+  next();
 });
 
 const User = mongoose.model("User", userSchema);

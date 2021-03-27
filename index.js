@@ -1,7 +1,7 @@
 const express = require("express");
 const app = express();
 const mongoose = require("mongoose");
-
+const cookieParser = require("cookie-parser");
 //Router handel
 const noteRoute = require("./routes/notesRoutes");
 const indexRoute = require("./routes/indexRoutes");
@@ -9,6 +9,7 @@ const userRoute = require("./routes/users");
 
 // //Middleware
 app.use(express.json());
+app.use(cookieParser("secretKey"));
 
 //connection database
 (async function () {
@@ -18,6 +19,7 @@ app.use(express.json());
       useNewUrlParser: true,
       useUnifiedTopology: true,
       useFindAndModify: false,
+      useCreateIndex: true,
     });
     console.log("Database connected successfully");
   } catch (err) {
@@ -26,7 +28,7 @@ app.use(express.json());
 })();
 
 // handeling routes;
-app.use("/", noteRoute);
+app.use("/notes", noteRoute);
 app.use("/users", userRoute);
 
 app.use("/", indexRoute);

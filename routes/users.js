@@ -4,12 +4,14 @@ const { body } = require("express-validator");
 
 //users controller
 const {
-  addUserController,
+  addUsersController,
+  getUsersController,
   getUserController,
+  loginController,
 } = require("../controllers/userController");
 
 //user routes
-router.get("/", getUserController);
+router.get("/", getUsersController);
 
 router.post(
   "/",
@@ -36,7 +38,10 @@ router.post(
       }
     }),
   ],
-  addUserController
+  addUsersController
 );
 
+router.get("/:id", body("id", "user not found").isMongoId(), getUserController);
+
+router.post("/login", loginController);
 module.exports = router;
