@@ -2,17 +2,22 @@ const express = require("express");
 const router = express.Router();
 const { body } = require("express-validator");
 
+//middleware
+const { auth } = require("../middleware/auth");
+
 //users controller
 const {
-  addUsersController,
+  addUserController,
   getUsersController,
   getUserController,
   loginController,
+  logoutController,
 } = require("../controllers/userController");
 
-//user routes
+//get all user routes
 router.get("/", getUsersController);
 
+//add user route
 router.post(
   "/",
   [
@@ -38,10 +43,16 @@ router.post(
       }
     }),
   ],
-  addUsersController
+  addUserController
 );
 
-router.get("/:id", body("id", "user not found").isMongoId(), getUserController);
+//getting user
+router.get("/me", auth, getUserController);
 
+//login user
 router.post("/login", loginController);
+
+//logout user
+router.post("/logout", auth, logoutController);
+
 module.exports = router;

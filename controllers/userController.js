@@ -1,11 +1,13 @@
 const { validationResult } = require("express-validator");
 const bcryptpass = require("bcryptjs");
+
 //database schema
 const User = require("../models/user");
 
-const addUsersController = async (req, res) => {
+//add uesr contorller
+const addUserController = async (req, res) => {
   const errors = validationResult(req);
-  if (errors.isEmpty()) {
+  if (!errors.isEmpty()) {
     return res.status(400).send(errors.array());
   }
   const user = new User(req.body);
@@ -19,6 +21,7 @@ const addUsersController = async (req, res) => {
   }
 };
 
+//getting all users
 const getUsersController = async (req, res) => {
   try {
     const users = await User.find({}, "-password");
@@ -28,15 +31,18 @@ const getUsersController = async (req, res) => {
   }
 };
 
+//getting single user
 const getUserController = async (req, res) => {
+  const id = req.user._id;
+
   try {
-    const id = req.params.id;
     const errors = validationResult(req);
-    if (errors.isEmpty()) {
+    if (!errors.isEmpty()) {
       return res.status(400).send(errors.array());
     }
 
     const userId = await User.findById(id);
+
     if (!userId) return res.status(404).send("user not exist");
     res.send(userId);
   } catch (err) {
@@ -44,6 +50,7 @@ const getUserController = async (req, res) => {
   }
 };
 
+//login controller
 const loginController = async (req, res) => {
   const { mail, password } = req.body;
 
@@ -74,9 +81,16 @@ const loginController = async (req, res) => {
   }
 };
 
+//logout user
+const logoutController = (req, res) => {
+  res.clearCookie("auth");
+  res.send("successfully loged out");
+};
+
 module.exports = {
-  addUsersController,
+  addUserController,
   getUsersController,
   getUserController,
   loginController,
+  logoutController,
 };

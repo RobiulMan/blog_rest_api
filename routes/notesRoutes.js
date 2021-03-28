@@ -18,6 +18,7 @@ const {
 router.post(
   "/",
   [
+    auth,
     body("title", "title is Required").notEmpty(),
     body("description", "description is Required").notEmpty(),
   ],
@@ -25,12 +26,12 @@ router.post(
 );
 
 //get all notes
-router.get("/", auth, getNotesController);
+router.get("/", getNotesController);
 
 //get single note
 router.get(
   "/:noteId",
-  body("noteId", "Note Not Found").isMongoId(),
+  [auth, body("noteId", "Note Not Found").isMongoId()],
   getNoteController
 );
 
@@ -38,6 +39,7 @@ router.get(
 router.put(
   "/:noteId",
   [
+    auth,
     body("noteId", "Note not found").isMongoId(),
     body("title", "title is required").optional().notEmpty(),
     body("description", "description is required").optional().notEmpty(),
@@ -48,7 +50,7 @@ router.put(
 //delete note
 router.delete(
   "/:noteId",
-  body("noteId", "Note not found").isMongoId(),
+  [auth, body("noteId", "Note not found").isMongoId()],
   deleteNoteController
 );
 
