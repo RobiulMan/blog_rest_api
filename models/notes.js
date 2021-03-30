@@ -13,6 +13,11 @@ const notesSchema = new mongoose.Schema(
       required: [true, "description is required"],
       minlength: [10, "description is must be 10 chracter long"],
     },
+    owner: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
+    },
   },
   {
     timestamps: true,

@@ -4,6 +4,7 @@ const { body } = require("express-validator");
 
 //middleware
 const { auth } = require("../middleware/auth");
+const { admin } = require("../middleware/admin");
 
 //users controller
 const {
@@ -15,7 +16,7 @@ const {
 } = require("../controllers/userController");
 
 //get all user routes
-router.get("/", getUsersController);
+router.get("/", [auth, admin], getUsersController);
 
 //add user route
 router.post(

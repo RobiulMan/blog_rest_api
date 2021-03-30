@@ -7,7 +7,7 @@ const auth = async (req, res, next) => {
     const token = req.signedCookies["auth"];
     try {
       //verify token
-      const decoded = jwt.verify(token, "secretKey");
+      const decoded = jwt.verify(token, process.env.JWT_SECRET);
       //getting user
       const user = await User.findById(decoded.id);
       req.user = user;

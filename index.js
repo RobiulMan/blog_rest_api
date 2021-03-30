@@ -7,14 +7,21 @@ const noteRoute = require("./routes/notesRoutes");
 const indexRoute = require("./routes/indexRoutes");
 const userRoute = require("./routes/users");
 
+//config
+require("dotenv").config({
+  path: "./config/keys.env",
+});
+//port
+const PORT = process.env.PORT || 9000;
+
 // //Middleware
 app.use(express.json());
-app.use(cookieParser("secretKey"));
+app.use(cookieParser(process.env.COOKES_SECRET));
 
 //connection database
 (async function () {
   try {
-    await mongoose.connect("mongodb://localhost:27017/notes-app", {
+    await mongoose.connect(`mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@cluster0.hzuax.mongodb.net/myblog?retryWrites=true&w=majority`, {
       useNewUrlParser: true,
       useNewUrlParser: true,
       useUnifiedTopology: true,
@@ -34,6 +41,6 @@ app.use("/users", userRoute);
 app.use("/", indexRoute);
 
 //server port runing
-app.listen(9000, () => {
-  console.log("server is created...");
+app.listen(PORT, () => {
+  console.log("server is running...");
 });

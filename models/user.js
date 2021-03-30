@@ -35,9 +35,19 @@ const userSchema = new mongoose.Schema({
       message: "password Must not congine your password",
     },
   },
+  isAdmin: {
+    type: Boolean,
+    default: false,
+  },
 });
 userSchema.methods.generateAuthToken = function () {
-  const token = jwt.sign({ id: this._id }, "secretKey", { expiresIn: "4h" });
+  const token = jwt.sign(
+    { id: this._id, isAdmin: this.isAdmin },
+    process.env.JWT_SECRET,
+    {
+      expiresIn: "4h",
+    }
+  );
   return token;
 };
 userSchema.pre("save", async function (next) {

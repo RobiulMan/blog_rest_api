@@ -3,13 +3,17 @@ const Note = require("../models/notes");
 //express-validation
 const { validationResult } = require("express-validator");
 
-const getAddController = async (req, res) => {
+//Adding Note
+const addController = async (req, res) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     return res.status(400).send(errors.array());
   }
   try {
-    const note = new Note(req.body);
+    const note = new Note({
+      ...req.body,
+      owner: req.user._id,
+    });
     await note.save();
     res.send(note);
   } catch (err) {
@@ -27,6 +31,8 @@ const getNotesController = async (req, res) => {
     res.status(500).send(err);
   }
 };
+
+//getting single note
 const getNoteController = async (req, res) => {
   const errors = validationResult(req);
   if (errors.isEmpty()) {
@@ -35,7 +41,7 @@ const getNoteController = async (req, res) => {
 
   try {
     const id = req.params.noteId;
-    const getNote = await Note.findById(id);
+    const getNote = await Note.findById(id).populate("owner");
     if (!getNote) {
       return res.status(400).send("there are no note");
     }
@@ -44,7 +50,7 @@ const getNoteController = async (req, res) => {
     res.status(500).send(err);
   }
 };
-
+//updating note
 const updateNoteController = async (req, res) => {
   const getNoteInput = Object.keys(req.body);
   const allowedUpdate = ["title", "description"];
@@ -58,16 +64,25 @@ const updateNoteController = async (req, res) => {
   }
   try {
     const id = req.params.noteId;
-    const note = await Note.findByIdAndUpdate(id, req.body, {
-      new: true,
-      runValidators: true,
-    });
+    const note = await Note.findOneAndUpdate(
+      {
+        _id: id,
+        owner: req.user._id,
+      },
+      req.body,
+      {
+        new: true,
+        runValidators: true,
+      }
+    );
     if (!note) return res.status(404).send("Note not Found");
     res.send(note);
   } catch (err) {
     res.status(500).send(err);
   }
 };
+
+//delete note
 const deleteNoteController = async (req, res) => {
   const errors = validationResult(req);
   if (errors.isEmpty()) {
@@ -75,15 +90,21 @@ const deleteNoteController = async (req, res) => {
   }
   try {
     const id = req.params.noteId;
-    const note = await Note.findByIdAndDelete(id);
+    const note = await Note.findOneAndDelete({
+      _id: id,
+      owner: req.user._id,
+    });
+
     if (!note) return res.status(404).send("Note not found");
     res.send(note);
   } catch (err) {
     res.status(500).send(err);
   }
 };
+
+
 module.exports = {
-  getAddController,
+  addController,
   getNotesController,
   getNoteController,
   updateNoteController,

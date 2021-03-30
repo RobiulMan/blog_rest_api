@@ -7,7 +7,7 @@ const { auth } = require("../middleware/auth");
 
 //contorller require from noteController
 const {
-  getAddController,
+  addController,
   getNotesController,
   getNoteController,
   updateNoteController,
@@ -22,7 +22,7 @@ router.post(
     body("title", "title is Required").notEmpty(),
     body("description", "description is Required").notEmpty(),
   ],
-  getAddController
+  addController
 );
 
 //get all notes

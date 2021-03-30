@@ -1,21 +1,31 @@
 const { validationResult } = require("express-validator");
 const bcryptpass = require("bcryptjs");
-
+const _ = require("loadsh");
 //database schema
 const User = require("../models/user");
 
 //add uesr contorller
 const addUserController = async (req, res) => {
   const errors = validationResult(req);
-  if (!errors.isEmpty()) {
+  if (errors.isEmpty()) {
     return res.status(400).send(errors.array());
   }
-  const user = new User(req.body);
+  const pickedPorperty = _.pick(req.body, [
+    "firstName",
+    "lastName",
+    "mail",
+    "password",
+  ]);
+  const user = new User(pickedPorperty);
   try {
     const foundUser = await User.findOne({ mail: req.body.mail });
     if (foundUser) return res.status(400).send("user already regstered");
     await user.save();
-    res.send(user);
+    res.send({
+      firstName: user.firstName,
+      lastName: user.lastName,
+      mail: user.mail,
+    });
   } catch (err) {
     res.status(500).send(err);
   }
